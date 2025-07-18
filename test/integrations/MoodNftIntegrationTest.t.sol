@@ -1,0 +1,48 @@
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.18;
+
+import {Test, console} from "forge-std/Test.sol";
+import {MoodNft} from "../../src/MoodNft.sol";
+import {DeployMoodNft} from "../../script/DeployMoodNft.s.sol";
+
+contract MoodNftIntegrationTest is Test {
+    DeployMoodNft deployer;
+    MoodNft private moodNft;
+
+    string private constant SAD_SVG_URI =
+        "data:application/json;base64,eyJuYW1lIjogIk1vb2QgTkZUIiJkZXNjcmlwdGlvbiI6ICJBbiBORlQgdGhhdCByZWZsZWN0cyB0aGUgb3duZXJzIG1vb2QuIiJhdHRyaWJ1dGVzIjogW3sidHJhaXRfdHlwZSI6ICJtb29kaW5lc3MiLCAidmFsdWUiOiAxMDB9XSwgImltYWdlIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjNhV1IwYUQwaU1UQXlOSEI0SWlCb1pXbG5hSFE5SWpFd01qUndlQ0lnZG1sbGQwSnZlRDBpTUNBd0lERXdNalFnTVRBeU5DSWdlRzFzYm5NOUltaDBkSEE2THk5M2QzY3Vkek11YjNKbkx6SXdNREF2YzNabklqNEtJQ0FnSUR4d1lYUm9JR1pwYkd3OUlpTXpNek1pQ2lBZ0lDQWdJQ0FnWkQwaVRUVXhNaUEyTkVNeU5qUXVOaUEyTkNBMk5DQXlOalF1TmlBMk5DQTFNVEp6TWpBd0xqWWdORFE0SURRME9DQTBORGdnTkRRNExUSXdNQzQySURRME9DMDBORGhUTnpVNUxqUWdOalFnTlRFeUlEWTBlbTB3SURneU1HTXRNakExTGpRZ01DMHpOekl0TVRZMkxqWXRNemN5TFRNM01uTXhOall1Tmkwek56SWdNemN5TFRNM01pQXpOeklnTVRZMkxqWWdNemN5SURNM01pMHhOall1TmlBek56SXRNemN5SURNM01ub2lJQzgrQ2lBZ0lDQThjR0YwYUNCbWFXeHNQU0lqUlRaRk5rVTJJZ29nSUNBZ0lDQWdJR1E5SWswMU1USWdNVFF3WXkweU1EVXVOQ0F3TFRNM01pQXhOall1Tmkwek56SWdNemN5Y3pFMk5pNDJJRE0zTWlBek56SWdNemN5SURNM01pMHhOall1TmlBek56SXRNemN5TFRFMk5pNDJMVE0zTWkwek56SXRNemN5ZWsweU9EZ2dOREl4WVRRNExqQXhJRFE0TGpBeElEQWdNQ0F4SURrMklEQWdORGd1TURFZ05EZ3VNREVnTUNBd0lERXRPVFlnTUhwdE16YzJJREkzTW1ndE5EZ3VNV010TkM0eUlEQXROeTQ0TFRNdU1pMDRMakV0Tnk0MFF6WXdOQ0EyTXpZdU1TQTFOakl1TlNBMU9UY2dOVEV5SURVNU4zTXRPVEl1TVNBek9TNHhMVGsxTGpnZ09EZ3VObU10TGpNZ05DNHlMVE11T1NBM0xqUXRPQzR4SURjdU5FZ3pOakJoT0NBNElEQWdNQ0F4TFRndE9DNDBZelF1TkMwNE5DNHpJRGMwTGpVdE1UVXhMallnTVRZd0xURTFNUzQyY3pFMU5TNDJJRFkzTGpNZ01UWXdJREUxTVM0MllUZ2dPQ0F3SURBZ01TMDRJRGd1TkhwdE1qUXRNakkwWVRRNExqQXhJRFE0TGpBeElEQWdNQ0F4SURBdE9UWWdORGd1TURFZ05EZ3VNREVnTUNBd0lERWdNQ0E1Tm5vaUlDOCtDaUFnSUNBOGNHRjBhQ0JtYVd4c1BTSWpNek16SWdvZ0lDQWdJQ0FnSUdROUlrMHlPRGdnTkRJeFlUUTRJRFE0SURBZ01TQXdJRGsySURBZ05EZ2dORGdnTUNBeElEQXRPVFlnTUhwdE1qSTBJREV4TW1NdE9EVXVOU0F3TFRFMU5TNDJJRFkzTGpNdE1UWXdJREUxTVM0MllUZ2dPQ0F3SURBZ01DQTRJRGd1TkdnME9DNHhZelF1TWlBd0lEY3VPQzB6TGpJZ09DNHhMVGN1TkNBekxqY3RORGt1TlNBME5TNHpMVGc0TGpZZ09UVXVPQzA0T0M0MmN6a3lJRE01TGpFZ09UVXVPQ0E0T0M0Mll5NHpJRFF1TWlBekxqa2dOeTQwSURndU1TQTNMalJJTmpZMFlUZ2dPQ0F3SURBZ01DQTRMVGd1TkVNMk5qY3VOaUEyTURBdU15QTFPVGN1TlNBMU16TWdOVEV5SURVek0zcHRNVEk0TFRFeE1tRTBPQ0EwT0NBd0lERWdNQ0E1TmlBd0lEUTRJRFE0SURBZ01TQXdMVGsySURCNklpQXZQZ284TDNOMlp6ND0ifQ==";
+
+    address private immutable USER = makeAddr("user");
+
+    function setUp() external {
+        deployer = new DeployMoodNft();
+        moodNft = deployer.run();
+    }
+
+    function testViewTokenURIIntegration() external {
+        // Arrange
+        vm.prank(USER);
+        moodNft.mintNft();
+
+        // Act
+        string memory tokenURI = moodNft.tokenURI(0);
+
+        // Assert
+        console.log(tokenURI);
+    }
+
+    function testFlipTokenToSad() external {
+        // Arrange
+        vm.prank(USER);
+        moodNft.mintNft();
+
+        // Act
+        vm.prank(USER);
+        moodNft.flipMood(0);
+
+        // Assert
+        string memory tokenURI = moodNft.tokenURI(0);
+        assertEq(tokenURI, SAD_SVG_URI);
+    }
+}
