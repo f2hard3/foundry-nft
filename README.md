@@ -1,66 +1,139 @@
-## Foundry
+# Foundry NFT Workspace Analysis
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+This repository is a Foundry-based Ethereum smart contract project focused on NFT (Non-Fungible Token) development and deployment. It leverages [Foundry](https://book.getfoundry.sh/) for Solidity development, testing, and scripting.
 
-Foundry consists of:
+---
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+## Workspace Structure
 
-## Documentation
+```
+.env
+.gitignore
+.gitmodules
+foundry.toml
+Makefile
+README.md
+broadcast/
+cache/
+images/
+lib/
+script/
+src/
+test/
+```
 
-https://book.getfoundry.sh/
+### Key Directories & Files
+
+- **src/**  
+  Contains core smart contracts:
+
+  - [`BasicNft.sol`](src/BasicNft.sol): A simple ERC721 NFT contract with customizable token URIs.
+  - [`MoodNft.sol`](src/MoodNft.sol): An ERC721 NFT that reflects the owner's mood (happy/sad) and allows flipping the mood.
+
+- **script/**  
+  Deployment and interaction scripts:
+
+  - [`DeployBasicNft.s.sol`](script/DeployBasicNft.s.sol): Deploys the BasicNft contract.
+  - [`DeployMoodNft.s.sol`](script/DeployMoodNft.s.sol): Deploys the MoodNft contract, encoding SVG images as base64.
+  - [`Interactions.s.sol`](script/Interactions.s.sol): Scripts for minting and flipping NFTs.
+
+- **test/**  
+  Contains unit and integration tests for both NFT contracts, ensuring correct deployment, minting, and mood flipping.
+
+- **images/**  
+  SVG and PNG assets used for NFT image URIs.
+
+- **lib/**  
+  External dependencies managed as git submodules:
+
+  - `forge-std`: Foundry standard library for testing.
+  - `openzeppelin-contracts`: Standard ERC contracts.
+  - `foundry-devops`: DevOps utilities for Foundry.
+
+- **Makefile**  
+  Provides shortcuts for common tasks: build, test, deploy, format, and more.
+
+- **foundry.toml**  
+  Foundry configuration, including remappings and file system permissions for reading images and broadcast logs.
+
+- **.env**  
+  Stores sensitive environment variables (RPC URLs, API keys, private keys) for deployment and verification.
+
+---
+
+## Main Features
+
+- **NFT Contracts**:
+
+  - [`BasicNft`](src/BasicNft.sol): Standard mintable NFT with IPFS-based metadata.
+  - [`MoodNft`](src/MoodNft.sol): NFT with dynamic mood (happy/sad), mood flipping, and on-chain SVG image encoding.
+
+- **Deployment & Interaction**:
+
+  - Scripts automate deployment and interaction with contracts, using Foundry's scripting capabilities and DevOps tools.
+
+- **Testing**:
+
+  - Comprehensive unit and integration tests using Forge's testing framework.
+
+- **Image Handling**:
+  - SVG images are read from the `images/` directory, encoded to base64, and embedded in NFT metadata.
+
+---
 
 ## Usage
 
-### Build
+### Install Dependencies
 
-```shell
-$ forge build
+```sh
+make install
 ```
 
-### Test
+### Build Contracts
 
-```shell
-$ forge test
+```sh
+make build
 ```
 
-### Format
+### Run Tests
 
-```shell
-$ forge fmt
+```sh
+make test
 ```
 
-### Gas Snapshots
+### Deploy Contracts
 
-```shell
-$ forge snapshot
+```sh
+make deploy
 ```
 
-### Anvil
+### Mint and Flip NFTs
 
-```shell
-$ anvil
+```sh
+make mint
+make mintMoodNft
+make flipMoodNft
 ```
 
-### Deploy
+### Format Code
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+```sh
+make format
 ```
 
-### Cast
+---
 
-```shell
-$ cast <subcommand>
-```
+## Security
 
-### Help
+- **.env** contains sensitive keys. Do not commit this file to public repositories.
+- Uses OpenZeppelin contracts for security best practices.
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+---
+
+## References
+
+- [Foundry Book](https://book.getfoundry.sh/)
+- [OpenZeppelin Contracts](https://github.com/OpenZeppelin/openzeppelin-contracts)
+- [Forge Standard Library](https://github.com/foundry-rs/forge-std)
+
+---
